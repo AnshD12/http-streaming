@@ -240,7 +240,7 @@ export const safeLiveIndex = function (playlist, liveEdgePadding) {
   const lastSegmentDuration = playlist.segments[i - 1].duration || playlist.targetDuration;
   const safeDistance = typeof liveEdgePadding === 'number' ?
     liveEdgePadding :
-    lastSegmentDuration;
+    lastSegmentDuration; //changed
 
   if (safeDistance === 0) {
     return i;
