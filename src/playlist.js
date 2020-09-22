@@ -6,7 +6,7 @@
 import videojs from 'video.js';
 import window from 'global/window';
 
-const {createTimeRange} = videojs;
+const { createTimeRange } = videojs;
 
 /**
  * walk backward until we find a duration we can use
@@ -16,7 +16,7 @@ const {createTimeRange} = videojs;
  * @param {Number} endSequence the mediaSequence to stop walking on
  */
 
-const backwardDuration = function(playlist, endSequence) {
+const backwardDuration = function (playlist, endSequence) {
   let result = 0;
   let i = endSequence - playlist.mediaSequence;
   // if a start time is available for segment immediately following
@@ -58,7 +58,7 @@ const backwardDuration = function(playlist, endSequence) {
  * @param {Playlist} playlist the playlist to walk through
  * @param {Number} endSequence the mediaSequence to stop walking on
  */
-const forwardDuration = function(playlist, endSequence) {
+const forwardDuration = function (playlist, endSequence) {
   let result = 0;
   let segment;
   let i = endSequence - playlist.mediaSequence;
@@ -101,7 +101,7 @@ const forwardDuration = function(playlist, endSequence) {
   * @return {Number} the duration between the first available segment
   * and end index.
   */
-const intervalDuration = function(playlist, endSequence, expired) {
+const intervalDuration = function (playlist, endSequence, expired) {
   let backward;
   let forward;
 
@@ -150,7 +150,7 @@ const intervalDuration = function(playlist, endSequence, expired) {
   * @return {Number} the duration between the start index and end
   * index.
   */
-export const duration = function(playlist, endSequence, expired) {
+export const duration = function (playlist, endSequence, expired) {
   if (!playlist) {
     return 0;
   }
@@ -175,8 +175,8 @@ export const duration = function(playlist, endSequence, expired) {
 
   // calculate the total duration based on the segment durations
   return intervalDuration(playlist,
-                          endSequence,
-                          expired);
+    endSequence,
+    expired);
 };
 
 /**
@@ -190,7 +190,7 @@ export const duration = function(playlist, endSequence, expired) {
   * @param {Number} endIndex
   * @return {Number} the number of seconds between startIndex and endIndex
   */
-export const sumDurations = function(playlist, startIndex, endIndex) {
+export const sumDurations = function (playlist, startIndex, endIndex) {
   let durations = 0;
 
   if (startIndex > endIndex) {
@@ -230,7 +230,7 @@ export const sumDurations = function(playlist, startIndex, endIndex) {
  *         point.
  * @function safeLiveIndex
  */
-export const safeLiveIndex = function(playlist, liveEdgePadding) {
+export const safeLiveIndex = function (playlist, liveEdgePadding) {
   if (!playlist.segments.length) {
     return 0;
   }
@@ -239,7 +239,7 @@ export const safeLiveIndex = function(playlist, liveEdgePadding) {
   let lastSegmentDuration = playlist.segments[i - 1].duration || playlist.targetDuration;
   const safeDistance = typeof liveEdgePadding === 'number' ?
     liveEdgePadding :
-    lastSegmentDuration + playlist.targetDuration * 2;
+    lastSegmentDuration; // changed
 
   if (safeDistance === 0) {
     return i;
@@ -277,7 +277,7 @@ export const safeLiveIndex = function(playlist, liveEdgePadding) {
  * @returns {Number} the end time of playlist
  * @function playlistEnd
  */
-export const playlistEnd = function(playlist, expired, useSafeLiveEnd, liveEdgePadding) {
+export const playlistEnd = function (playlist, expired, useSafeLiveEnd, liveEdgePadding) {
   if (!playlist || !playlist.segments) {
     return null;
   }
@@ -294,8 +294,8 @@ export const playlistEnd = function(playlist, expired, useSafeLiveEnd, liveEdgeP
   const endSequence = useSafeLiveEnd ? safeLiveIndex(playlist, liveEdgePadding) : playlist.segments.length;
 
   return intervalDuration(playlist,
-                          playlist.mediaSequence + endSequence,
-                          expired);
+    playlist.mediaSequence + endSequence,
+    expired);
 };
 
 /**
@@ -315,7 +315,7 @@ export const playlistEnd = function(playlist, expired, useSafeLiveEnd, liveEdgeP
   * @return {TimeRanges} the periods of time that are valid targets
   * for seeking
   */
-export const seekable = function(playlist, expired, liveEdgePadding) {
+export const seekable = function (playlist, expired, liveEdgePadding) {
   let useSafeLiveEnd = true;
   let seekableStart = expired || 0;
   let seekableEnd = playlistEnd(playlist, expired, useSafeLiveEnd, liveEdgePadding);
@@ -326,11 +326,11 @@ export const seekable = function(playlist, expired, liveEdgePadding) {
   return createTimeRange(seekableStart, seekableEnd);
 };
 
-const isWholeNumber = function(num) {
+const isWholeNumber = function (num) {
   return (num - Math.floor(num)) === 0;
 };
 
-const roundSignificantDigit = function(increment, num) {
+const roundSignificantDigit = function (increment, num) {
   // If we have a whole number, just add 1 to it
   if (isWholeNumber(num)) {
     return num + (increment * 0.1);
@@ -343,7 +343,7 @@ const roundSignificantDigit = function(increment, num) {
     let temp = num * scale;
 
     if (isWholeNumber(temp) ||
-        i === numDecimalDigits) {
+      i === numDecimalDigits) {
       return (temp + increment) / scale;
     }
   }
@@ -363,10 +363,10 @@ const floorLeastSignificantDigit = roundSignificantDigit.bind(null, -1);
  * @param {Number} startTime
  * @return {Object}
  */
-export const getMediaInfoForTime = function(playlist,
-                                            currentTime,
-                                            startIndex,
-                                            startTime) {
+export const getMediaInfoForTime = function (playlist,
+  currentTime,
+  startIndex,
+  startTime) {
   let i;
   let segment;
   let numSegments = playlist.segments.length;
@@ -439,7 +439,7 @@ export const getMediaInfoForTime = function(playlist,
  * @return {boolean} whether the playlist is blacklisted or not
  * @function isBlacklisted
  */
-export const isBlacklisted = function(playlist) {
+export const isBlacklisted = function (playlist) {
   return playlist.excludeUntil && playlist.excludeUntil > Date.now();
 };
 
@@ -451,7 +451,7 @@ export const isBlacklisted = function(playlist) {
  * @return {boolean} whether the playlist is incompatible or not
  * @function isIncompatible
  */
-export const isIncompatible = function(playlist) {
+export const isIncompatible = function (playlist) {
   return playlist.excludeUntil && playlist.excludeUntil === Infinity;
 };
 
@@ -462,7 +462,7 @@ export const isIncompatible = function(playlist) {
  * @return {boolean} whether the playlist is enabled or not
  * @function isEnabled
  */
-export const isEnabled = function(playlist) {
+export const isEnabled = function (playlist) {
   const blacklisted = isBlacklisted(playlist);
 
   return (!playlist.disabled && !blacklisted);
@@ -475,7 +475,7 @@ export const isEnabled = function(playlist) {
  * @return {boolean} whether the playlist is disabled manually or not
  * @function isDisabled
  */
-export const isDisabled = function(playlist) {
+export const isDisabled = function (playlist) {
   return playlist.disabled;
 };
 
@@ -484,7 +484,7 @@ export const isDisabled = function(playlist) {
  *
  * @return {Boolean} true if it's an AES encrypted HLS stream
  */
-export const isAes = function(media) {
+export const isAes = function (media) {
   for (let i = 0; i < media.segments.length; i++) {
     if (media.segments[i].key) {
       return true;
@@ -498,7 +498,7 @@ export const isAes = function(media) {
  *
  * @return {Boolean} true if the playlist contains fMP4
  */
-export const isFmp4 = function(media) {
+export const isFmp4 = function (media) {
   for (let i = 0; i < media.segments.length; i++) {
     if (media.segments[i].map) {
       return true;
@@ -518,7 +518,7 @@ export const isFmp4 = function(media) {
  *         Whether the playlist contains a value for the attribute or not
  * @function hasAttribute
  */
-export const hasAttribute = function(attr, playlist) {
+export const hasAttribute = function (attr, playlist) {
   return playlist.attributes && playlist.attributes[attr];
 };
 
@@ -538,10 +538,10 @@ export const hasAttribute = function(attr, playlist) {
  *         the given playlist is unavailable
  * @function estimateSegmentRequestTime
  */
-export const estimateSegmentRequestTime = function(segmentDuration,
-                                                   bandwidth,
-                                                   playlist,
-                                                   bytesReceived = 0) {
+export const estimateSegmentRequestTime = function (segmentDuration,
+  bandwidth,
+  playlist,
+  bytesReceived = 0) {
   if (!hasAttribute('BANDWIDTH', playlist)) {
     return NaN;
   }
